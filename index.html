@@ -67,37 +67,19 @@
         .btn-outline:hover { background:#3b82f6; color:white; }
         .btn-danger { background:#ef4444; color:white; }
         .btn-success { background:#10b981; color:white; }
-        .product-grid, .ad-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.8rem; }
-        .product-card, .ad-card { background:#f8fafc; border-radius:1.5rem; overflow:hidden; border:1px solid #e2e8f0; transition:0.2s; }
-        .product-card:hover, .ad-card:hover { transform:translateY(-5px); box-shadow:0 15px 30px -12px rgba(0,0,0,0.15); }
-        .product-img, .ad-img { height:180px; background:#cbd5e1; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-        .product-img img, .ad-img img { width:100%; height:100%; object-fit:cover; }
-        .product-info, .ad-info { padding:1.2rem; }
+        .product-grid, .ad-grid, .banner-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.8rem; }
+        .product-card, .ad-card, .banner-card { background:#f8fafc; border-radius:1.5rem; overflow:hidden; border:1px solid #e2e8f0; transition:0.2s; }
+        .product-card:hover, .ad-card:hover, .banner-card:hover { transform:translateY(-5px); box-shadow:0 15px 30px -12px rgba(0,0,0,0.15); }
+        .product-img, .ad-img, .banner-img { height:180px; background:#cbd5e1; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        .product-img img, .ad-img img, .banner-img img { width:100%; height:100%; object-fit:cover; }
+        .product-info, .ad-info, .banner-info { padding:1.2rem; }
         .product-title { font-weight:700; font-size:1.2rem; }
         .product-price { color:#3b82f6; font-weight:800; margin:0.5rem 0; }
-        .ad-title { font-weight:700; font-size:1.1rem; }
-        .product-actions, .ad-actions { display:flex; gap:0.8rem; justify-content:flex-end; }
-        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
-        .modal-content { background:white; border-radius:2rem; padding:2rem; max-width:500px; width:90%; }
-        .invoice-item { border:1px solid #e2e8f0; border-radius:1rem; padding:1rem; margin-bottom:1rem; }
+        .ad-title, .banner-title { font-weight:700; font-size:1.1rem; }
+        .product-actions, .ad-actions, .banner-actions { display:flex; gap:0.8rem; justify-content:flex-end; }
+        .image-preview { max-width: 150px; max-height: 150px; margin-top: 0.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; }
         .badge-active { background:#10b981; color:white; padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.8rem; }
         .badge-inactive { background:#ef4444; color:white; padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.8rem; }
-        .image-preview { max-width: 150px; max-height: 150px; margin-top: 0.5rem; border-radius: 1rem; border: 1px solid #e2e8f0; }
-        .promo-preview {
-            background: linear-gradient(145deg, #1e1e2f, #2d2b4b);
-            border-radius: 2rem;
-            padding: 1.5rem;
-            margin-top: 1rem;
-            color: white;
-        }
-        .promo-preview h4 { margin-bottom: 1rem; color: #fbbf24; }
-        .promo-preview-content {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .promo-preview-content img { width: 80px; height: 80px; object-fit: cover; border-radius: 1rem; }
         footer { text-align:center; margin-top:3rem; color:#64748b; }
     </style>
 </head>
@@ -116,7 +98,7 @@
             <a id="ordersTab">Pesanan</a>
             <a id="invoicesTab">Tagihan</a>
             <a id="adsTab">Iklan Grid</a>
-            <a id="promoTab">Banner Promo</a>
+            <a id="bannersTab">Banner Slider</a>
             <a id="logoutBtn">Logout</a>
         </div>
     </div>
@@ -165,38 +147,20 @@
             <div class="card"><h2 class="section-title">Daftar Iklan</h2><div id="adList" class="ad-grid"></div></div>
         </div>
 
-        <!-- Banner Promo -->
-        <div id="promoPanel" style="display:none;">
+        <!-- Banner Slider -->
+        <div id="bannersPanel" style="display:none;">
             <div class="card">
-                <h2 class="section-title">Atur Banner Promo</h2>
-                <form id="promoForm" enctype="multipart/form-data">
-                    <div class="form-group"><label>Aktifkan Banner</label><select id="promoActive" class="form-control"><option value="true">Aktif</option><option value="false">Tidak Aktif</option></select></div>
-                    <div class="form-group"><label>Gambar Banner</label><input type="file" id="promoImageFile" accept="image/*" class="form-control"><img id="promoImagePreview" class="image-preview" style="display:none;"></div>
-                    <div class="form-group"><label>Badge (misal: GRATIS!)</label><input type="text" id="promoBadge" class="form-control" placeholder="GRATIS!"></div>
-                    <div class="form-group"><label>Judul Utama (bisa 2 baris)</label><textarea id="promoTitle" class="form-control" rows="2" placeholder="Bawa Pulang Idol Baru&#10;NANGONG YU!"></textarea></div>
-                    <div class="form-group"><label>Subtitle / Deskripsi</label><input type="text" id="promoSubtitle" class="form-control" placeholder="Interknot Membership"></div>
-                    <div class="form-group"><label>Keterangan Tambahan</label><input type="text" id="promoNote" class="form-control" placeholder="*Berlaku untuk Produk Tertentu"></div>
-                    <div class="form-group"><label>Teks Harga</label><input type="text" id="promoPriceText" class="form-control" placeholder="HARGA FINAL"></div>
-                    <div class="form-group"><label>Periode Promo</label><input type="text" id="promoDate" class="form-control" placeholder="24-30 Mar 2026"></div>
-                    <div class="form-group"><label>Teks Tombol</label><input type="text" id="promoButtonText" class="form-control" placeholder="Top Up Sekarang!"></div>
-                    <div class="form-group"><label>Link Tombol</label><input type="url" id="promoButtonLink" class="form-control" placeholder="https://..."></div>
-                    <button type="submit" class="btn btn-primary">Simpan Banner Promo</button>
+                <h2 class="section-title">Tambah Banner Slider (16:9)</h2>
+                <form id="bannerForm" enctype="multipart/form-data">
+                    <div class="form-group"><label>Gambar Banner (16:9)</label><input type="file" id="bannerImageFile" accept="image/*" class="form-control"><img id="bannerImagePreview" class="image-preview" style="display:none;"></div>
+                    <div class="form-group"><label>Link Tujuan (misal: /product/xxx atau https://...)</label><input type="url" id="bannerLink" class="form-control" placeholder="https://..." required></div>
+                    <div class="form-group"><label>Status</label><select id="bannerActive" class="form-control"><option value="true">Aktif</option><option value="false">Tidak Aktif</option></select></div>
+                    <button type="submit" class="btn btn-primary">Tambah Banner</button>
                 </form>
-                <div class="promo-preview" id="promoPreview" style="display:none;">
-                    <h4>Preview Banner</h4>
-                    <div class="promo-preview-content">
-                        <img id="previewImg" src="" alt="Preview">
-                        <div>
-                            <div><span id="previewBadge" class="badge-active" style="background:#ef4444;">GRATIS!</span></div>
-                            <div id="previewTitle" style="font-weight:800; font-size:1.2rem;"></div>
-                            <div id="previewSubtitle"></div>
-                            <div id="previewNote" style="font-size:0.8rem;"></div>
-                            <div id="previewPrice" style="color:#fbbf24; font-weight:700;"></div>
-                            <div id="previewDate"></div>
-                            <button class="btn" style="background:#fbbf24; color:#000; margin-top:0.5rem;" id="previewButton">Button</button>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div class="card">
+                <h2 class="section-title">Daftar Banner</h2>
+                <div id="bannerList" class="banner-grid"></div>
             </div>
         </div>
     </div>
@@ -209,32 +173,21 @@
         ORDERS: '3dxo_orders',
         INVOICES: '3dxo_invoices',
         ADS: '3dxo_ads',
-        PROMO: '3dxo_promo'
+        BANNERS: '3dxo_banners'
     };
     let products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
     let orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS)) || [];
     let invoices = JSON.parse(localStorage.getItem(STORAGE_KEYS.INVOICES)) || [];
     let ads = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADS)) || [];
-    let promo = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROMO)) || {
-        active: true,
-        image: '',
-        badge: 'GRATIS!',
-        title: 'Bawa Pulang Idol Baru\nNANGONG YU!',
-        subtitle: 'Interknot Membership',
-        note: '*Berlaku untuk Produk Tertentu',
-        priceText: 'HARGA FINAL',
-        date: '24-30 Mar 2026',
-        buttonText: 'Top Up Sekarang!',
-        buttonLink: '#'
-    };
+    let banners = JSON.parse(localStorage.getItem(STORAGE_KEYS.BANNERS)) || [];
 
     function saveProducts() { localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products)); }
     function saveOrders() { localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders)); }
     function saveInvoices() { localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices)); }
     function saveAds() { localStorage.setItem(STORAGE_KEYS.ADS, JSON.stringify(ads)); }
-    function savePromo() { localStorage.setItem(STORAGE_KEYS.PROMO, JSON.stringify(promo)); }
+    function saveBanners() { localStorage.setItem(STORAGE_KEYS.BANNERS, JSON.stringify(banners)); }
 
-    // Populate demo data if empty
+    // Demo data
     if (products.length === 0) {
         products = [
             { id: 'p1', name: 'Website Company Profile', category: 'Website', price: 1500000, desc: 'Website profesional untuk perusahaan Anda.', image: '' },
@@ -250,23 +203,30 @@
         ];
         saveAds();
     }
+    if (banners.length === 0) {
+        banners = [
+            { id: 'b1', imageUrl: '', link: 'https://example.com/product1', active: true, createdAt: new Date().toISOString() }
+        ];
+        saveBanners();
+    }
 
-    // DOM elements
+    // DOM elements (singkat, karena sebagian besar sama)
     const loginFormDiv = document.getElementById('loginForm');
     const adminPanelDiv = document.getElementById('adminPanel');
     const productsPanelDiv = document.getElementById('productsPanel');
     const ordersPanelDiv = document.getElementById('ordersPanel');
     const invoicesPanelDiv = document.getElementById('invoicesPanel');
     const adsPanelDiv = document.getElementById('adsPanel');
-    const promoPanelDiv = document.getElementById('promoPanel');
+    const bannersPanelDiv = document.getElementById('bannersPanel');
     const productListDiv = document.getElementById('productList');
     const orderListDiv = document.getElementById('orderList');
     const invoiceListDiv = document.getElementById('invoiceList');
     const adListDiv = document.getElementById('adList');
+    const bannerListDiv = document.getElementById('bannerList');
     const productForm = document.getElementById('productForm');
     const invoiceForm = document.getElementById('invoiceForm');
     const adForm = document.getElementById('adForm');
-    const promoForm = document.getElementById('promoForm');
+    const bannerForm = document.getElementById('bannerForm');
     const productIdInput = document.getElementById('productId');
     const productNameInput = document.getElementById('productName');
     const productCategoryInput = document.getElementById('productCategory');
@@ -284,128 +244,328 @@
     const ordersTab = document.getElementById('ordersTab');
     const invoicesTab = document.getElementById('invoicesTab');
     const adsTab = document.getElementById('adsTab');
-    const promoTab = document.getElementById('promoTab');
+    const bannersTab = document.getElementById('bannersTab');
     const logoutBtn = document.getElementById('logoutBtn');
     const adminLoginBtn = document.getElementById('adminLoginBtn');
 
-    // Product image preview
-    productImageFile.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) { const reader = new FileReader(); reader.onload = (ev) => { productImagePreview.src = ev.target.result; productImagePreview.style.display = 'block'; }; reader.readAsDataURL(file); }
-        else { productImagePreview.style.display = 'none'; }
-    });
+    // Banner preview
+    const bannerImageFile = document.getElementById('bannerImageFile');
+    const bannerImagePreview = document.getElementById('bannerImagePreview');
+    const bannerLinkInput = document.getElementById('bannerLink');
+    const bannerActiveSelect = document.getElementById('bannerActive');
 
-    // Ad image preview
-    adImageFile.addEventListener('change', (e) => {
+    bannerImageFile.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (file) { const reader = new FileReader(); reader.onload = (ev) => { adImagePreview.src = ev.target.result; adImagePreview.style.display = 'block'; }; reader.readAsDataURL(file); }
-        else { adImagePreview.style.display = 'none'; }
-    });
-
-    // Promo image preview
-    const promoImageFile = document.getElementById('promoImageFile');
-    const promoImagePreview = document.getElementById('promoImagePreview');
-    promoImageFile.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) { const reader = new FileReader(); reader.onload = (ev) => { promoImagePreview.src = ev.target.result; promoImagePreview.style.display = 'block'; }; reader.readAsDataURL(file); }
-        else { promoImagePreview.style.display = 'none'; }
-    });
-
-    // Update promo preview
-    function updatePromoPreview() {
-        const previewDiv = document.getElementById('promoPreview');
-        const active = document.getElementById('promoActive').value === 'true';
-        if (!active) { previewDiv.style.display = 'none'; return; }
-        previewDiv.style.display = 'block';
-        const img = document.getElementById('previewImg');
-        const file = promoImageFile.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = (ev) => { img.src = ev.target.result; };
+            reader.onload = (ev) => { bannerImagePreview.src = ev.target.result; bannerImagePreview.style.display = 'block'; };
             reader.readAsDataURL(file);
-        } else if (promo.image) {
-            img.src = promo.image;
         } else {
-            img.src = '';
+            bannerImagePreview.style.display = 'none';
         }
-        document.getElementById('previewBadge').innerText = document.getElementById('promoBadge').value || 'GRATIS!';
-        document.getElementById('previewTitle').innerHTML = (document.getElementById('promoTitle').value || 'Bawa Pulang Idol Baru\nNANGONG YU!').replace(/\n/g, '<br>');
-        document.getElementById('previewSubtitle').innerText = document.getElementById('promoSubtitle').value || 'Interknot Membership';
-        document.getElementById('previewNote').innerText = document.getElementById('promoNote').value || '*Berlaku untuk Produk Tertentu';
-        document.getElementById('previewPrice').innerText = document.getElementById('promoPriceText').value || 'HARGA FINAL';
-        document.getElementById('previewDate').innerText = document.getElementById('promoDate').value || '24-30 Mar 2026';
-        document.getElementById('previewButton').innerText = document.getElementById('promoButtonText').value || 'Top Up Sekarang!';
+    });
+
+    // Product preview
+    productImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => { productImagePreview.src = ev.target.result; productImagePreview.style.display = 'block'; };
+            reader.readAsDataURL(file);
+        } else {
+            productImagePreview.style.display = 'none';
+        }
+    });
+
+    // Ad preview
+    adImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => { adImagePreview.src = ev.target.result; adImagePreview.style.display = 'block'; };
+            reader.readAsDataURL(file);
+        } else {
+            adImagePreview.style.display = 'none';
+        }
+    });
+
+    // Fungsi render (produk, pesanan, tagihan, iklan, banner)
+    function showProducts() { productsPanelDiv.style.display='block'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; bannersPanelDiv.style.display='none'; renderProducts(); }
+    function showOrders() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='block'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; bannersPanelDiv.style.display='none'; renderOrders(); }
+    function showInvoices() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='block'; adsPanelDiv.style.display='none'; bannersPanelDiv.style.display='none'; renderInvoices(); }
+    function showAds() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='block'; bannersPanelDiv.style.display='none'; renderAds(); }
+    function showBanners() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; bannersPanelDiv.style.display='block'; renderBanners(); }
+
+    function renderProducts() {
+        productListDiv.innerHTML = '';
+        if (products.length === 0) { productListDiv.innerHTML = '<div class="card">Belum ada produk.</div>'; return; }
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="product-img">${p.image ? `<img src="${p.image}">` : '<i class="fas fa-code fa-3x"></i>'}</div>
+                <div class="product-info">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">Rp ${p.price.toLocaleString()}</div>
+                    <div class="product-desc">${p.desc.substring(0,80)}${p.desc.length>80?'...':''}</div>
+                    <div class="product-actions">
+                        <button class="btn btn-outline" onclick="editProduct('${p.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Hapus</button>
+                    </div>
+                </div>
+            `;
+            productListDiv.appendChild(card);
+        });
     }
 
-    // Add listeners for promo preview
-    const promoFields = ['promoActive', 'promoBadge', 'promoTitle', 'promoSubtitle', 'promoNote', 'promoPriceText', 'promoDate', 'promoButtonText'];
-    promoFields.forEach(f => document.getElementById(f).addEventListener('input', updatePromoPreview));
-    promoImageFile.addEventListener('change', updatePromoPreview);
+    window.editProduct = (id) => {
+        const p = products.find(p => p.id === id);
+        if (p) {
+            productIdInput.value = p.id;
+            productNameInput.value = p.name;
+            productCategoryInput.value = p.category;
+            productPriceInput.value = p.price;
+            productDescInput.value = p.desc;
+            if (p.image) { productImagePreview.src = p.image; productImagePreview.style.display = 'block'; }
+            else productImagePreview.style.display = 'none';
+            productImageFile.value = '';
+            productForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+    window.deleteProduct = (id) => {
+        if (confirm('Hapus produk?')) {
+            products = products.filter(p => p.id !== id);
+            saveProducts();
+            renderProducts();
+        }
+    };
 
-    function loadPromoForm() {
-        document.getElementById('promoActive').value = promo.active ? 'true' : 'false';
-        document.getElementById('promoBadge').value = promo.badge || '';
-        document.getElementById('promoTitle').value = promo.title || '';
-        document.getElementById('promoSubtitle').value = promo.subtitle || '';
-        document.getElementById('promoNote').value = promo.note || '';
-        document.getElementById('promoPriceText').value = promo.priceText || '';
-        document.getElementById('promoDate').value = promo.date || '';
-        document.getElementById('promoButtonText').value = promo.buttonText || '';
-        document.getElementById('promoButtonLink').value = promo.buttonLink || '';
-        if (promo.image) { promoImagePreview.src = promo.image; promoImagePreview.style.display = 'block'; }
-        updatePromoPreview();
-    }
-
-    function showProducts() { productsPanelDiv.style.display='block'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; promoPanelDiv.style.display='none'; renderProducts(); }
-    function showOrders() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='block'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; promoPanelDiv.style.display='none'; renderOrders(); }
-    function showInvoices() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='block'; adsPanelDiv.style.display='none'; promoPanelDiv.style.display='none'; renderInvoices(); }
-    function showAds() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='block'; promoPanelDiv.style.display='none'; renderAds(); }
-    function showPromo() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; promoPanelDiv.style.display='block'; loadPromoForm(); }
-
-    function renderProducts() { /* ... (sama seperti sebelumnya, dipertahankan) ... */ }
-    function renderOrders() { /* ... */ }
-    function renderInvoices() { /* ... */ }
-    function renderAds() { /* ... */ }
-
-    // Shortened for brevity – in full code, these functions are implemented as before.
-    // We'll include the full functions from previous version but omit here for space.
-    // For completeness, we'll assume the same product/order/invoice/ad functions exist.
-
-    // We'll just add the promo form submission and necessary functions.
-
-    promoForm.addEventListener('submit', (e) => {
+    productForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const active = document.getElementById('promoActive').value === 'true';
-        const badge = document.getElementById('promoBadge').value.trim();
-        const title = document.getElementById('promoTitle').value.trim();
-        const subtitle = document.getElementById('promoSubtitle').value.trim();
-        const note = document.getElementById('promoNote').value.trim();
-        const priceText = document.getElementById('promoPriceText').value.trim();
-        const date = document.getElementById('promoDate').value.trim();
-        const buttonText = document.getElementById('promoButtonText').value.trim();
-        const buttonLink = document.getElementById('promoButtonLink').value.trim();
-        const file = promoImageFile.files[0];
-        const processSave = (imageBase64) => {
-            promo.active = active;
-            promo.badge = badge;
-            promo.title = title;
-            promo.subtitle = subtitle;
-            promo.note = note;
-            promo.priceText = priceText;
-            promo.date = date;
-            promo.buttonText = buttonText;
-            promo.buttonLink = buttonLink;
-            if (imageBase64 !== undefined) promo.image = imageBase64;
-            savePromo();
-            alert('Banner promo disimpan!');
+        const id = productIdInput.value;
+        const name = productNameInput.value.trim();
+        const category = productCategoryInput.value.trim();
+        const price = parseInt(productPriceInput.value);
+        const desc = productDescInput.value.trim();
+        const file = productImageFile.files[0];
+        if (!name || !category || !price || !desc) return alert('Isi semua');
+        const process = (img) => {
+            if (id) {
+                const idx = products.findIndex(p => p.id === id);
+                if (idx !== -1) products[idx] = { ...products[idx], name, category, price, desc, image: img || products[idx].image };
+            } else {
+                products.push({ id: 'p'+Date.now(), name, category, price, desc, image: img || '' });
+            }
+            saveProducts();
+            renderProducts();
+            productForm.reset();
+            productIdInput.value = '';
+            productImagePreview.style.display = 'none';
         };
         if (file) {
             const reader = new FileReader();
-            reader.onload = (ev) => processSave(ev.target.result);
+            reader.onload = (ev) => process(ev.target.result);
             reader.readAsDataURL(file);
         } else {
-            processSave();
+            process(null);
         }
+    });
+    cancelEditBtn.addEventListener('click', () => {
+        productForm.reset();
+        productIdInput.value = '';
+        productImagePreview.style.display = 'none';
+    });
+
+    function renderOrders() {
+        orderListDiv.innerHTML = '';
+        if (orders.length === 0) { orderListDiv.innerHTML = '<div class="card">Belum ada pesanan.</div>'; return; }
+        orders.forEach(order => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div><strong>ID:</strong> ${order.id}</div>
+                <div><strong>Pembeli:</strong> ${order.customerName} (${order.customerEmail})</div>
+                <div><strong>Total:</strong> Rp ${order.total.toLocaleString()}</div>
+                <div><strong>Status:</strong> ${order.status}</div>
+                <div><strong>Tanggal:</strong> ${new Date(order.date).toLocaleString()}</div>
+                <hr><h4>Detail:</h4>${order.items.map(i => `<div>${i.name} x ${i.quantity} = Rp ${(i.price*i.quantity).toLocaleString()}</div>`).join('')}
+            `;
+            orderListDiv.appendChild(card);
+        });
+    }
+
+    function renderInvoices() {
+        invoiceListDiv.innerHTML = '';
+        if (invoices.length === 0) { invoiceListDiv.innerHTML = '<div class="card">Belum ada tagihan.</div>'; return; }
+        invoices.forEach(inv => {
+            const div = document.createElement('div');
+            div.className = 'invoice-item';
+            div.innerHTML = `
+                <div><strong>${inv.email}</strong> - ${inv.name || '-'}</div>
+                <div>Rp ${inv.amount.toLocaleString()} - ${inv.desc}</div>
+                <div>Status: ${inv.paid ? 'Lunas' : 'Belum Dibayar'}</div>
+                ${!inv.paid ? `<button class="btn btn-success btn-sm" onclick="markPaid('${inv.id}')">Tandai Lunas</button>` : ''}
+            `;
+            invoiceListDiv.appendChild(div);
+        });
+    }
+
+    window.markPaid = (id) => {
+        const idx = invoices.findIndex(i => i.id === id);
+        if (idx !== -1) {
+            invoices[idx].paid = true;
+            saveInvoices();
+            renderInvoices();
+        }
+    };
+
+    invoiceForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('invoiceEmail').value.trim();
+        const name = document.getElementById('invoiceName').value.trim();
+        const amount = parseInt(document.getElementById('invoiceAmount').value);
+        const desc = document.getElementById('invoiceDesc').value.trim();
+        if (!email || !amount || !desc) return alert('Isi semua');
+        invoices.push({ id: 'inv'+Date.now(), email, name, amount, desc, paid: false, createdAt: new Date().toISOString() });
+        saveInvoices();
+        renderInvoices();
+        invoiceForm.reset();
+    });
+
+    function renderAds() {
+        adListDiv.innerHTML = '';
+        if (ads.length === 0) { adListDiv.innerHTML = '<div class="card">Belum ada iklan.</div>'; return; }
+        ads.forEach(ad => {
+            const card = document.createElement('div');
+            card.className = 'ad-card';
+            card.innerHTML = `
+                <div class="ad-img">${ad.imageUrl ? `<img src="${ad.imageUrl}">` : '<i class="fas fa-image fa-3x"></i>'}</div>
+                <div class="ad-info">
+                    <div class="ad-title">${ad.title}</div>
+                    <div class="ad-link">${ad.link}</div>
+                    <div>Status: ${ad.active ? '<span class="badge-active">Aktif</span>' : '<span class="badge-inactive">Tidak Aktif</span>'}</div>
+                    <div class="ad-actions">
+                        <button class="btn btn-outline" onclick="editAd('${ad.id}')">Edit</button>
+                        <button class="btn btn-outline" onclick="toggleAdActive('${ad.id}')">${ad.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                        <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">Hapus</button>
+                    </div>
+                </div>
+            `;
+            adListDiv.appendChild(card);
+        });
+    }
+
+    window.editAd = (id) => {
+        const ad = ads.find(a => a.id === id);
+        if (ad) {
+            adTitleInput.value = ad.title;
+            adLinkInput.value = ad.link;
+            adActiveSelect.value = ad.active ? 'true' : 'false';
+            if (ad.imageUrl) { adImagePreview.src = ad.imageUrl; adImagePreview.style.display = 'block'; }
+            else adImagePreview.style.display = 'none';
+            adImageFile.value = '';
+            adForm.dataset.editId = ad.id;
+        }
+    };
+    window.toggleAdActive = (id) => {
+        const idx = ads.findIndex(a => a.id === id);
+        if (idx !== -1) {
+            ads[idx].active = !ads[idx].active;
+            saveAds();
+            renderAds();
+        }
+    };
+    window.deleteAd = (id) => {
+        if (confirm('Hapus iklan?')) {
+            ads = ads.filter(a => a.id !== id);
+            saveAds();
+            renderAds();
+        }
+    };
+
+    adForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = adTitleInput.value.trim();
+        const link = adLinkInput.value.trim();
+        const active = adActiveSelect.value === 'true';
+        const file = adImageFile.files[0];
+        if (!title || !link) return alert('Isi semua');
+        const process = (img) => {
+            const editId = adForm.dataset.editId;
+            if (editId) {
+                const idx = ads.findIndex(a => a.id === editId);
+                if (idx !== -1) ads[idx] = { ...ads[idx], title, link, active, imageUrl: img || ads[idx].imageUrl };
+                delete adForm.dataset.editId;
+            } else {
+                ads.push({ id: 'ad'+Date.now(), title, imageUrl: img || '', link, active, createdAt: new Date().toISOString() });
+            }
+            saveAds();
+            renderAds();
+            adForm.reset();
+            adImagePreview.style.display = 'none';
+        };
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => process(ev.target.result);
+            reader.readAsDataURL(file);
+        } else {
+            process(null);
+        }
+    });
+
+    function renderBanners() {
+        bannerListDiv.innerHTML = '';
+        if (banners.length === 0) { bannerListDiv.innerHTML = '<div class="card">Belum ada banner.</div>'; return; }
+        banners.forEach(b => {
+            const card = document.createElement('div');
+            card.className = 'banner-card';
+            card.innerHTML = `
+                <div class="banner-img">${b.imageUrl ? `<img src="${b.imageUrl}">` : '<i class="fas fa-image fa-3x"></i>'}</div>
+                <div class="banner-info">
+                    <div class="banner-title">Link: ${b.link}</div>
+                    <div>Status: ${b.active ? '<span class="badge-active">Aktif</span>' : '<span class="badge-inactive">Tidak Aktif</span>'}</div>
+                    <div class="banner-actions">
+                        <button class="btn btn-outline" onclick="toggleBannerActive('${b.id}')">${b.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                        <button class="btn btn-danger" onclick="deleteBanner('${b.id}')">Hapus</button>
+                    </div>
+                </div>
+            `;
+            bannerListDiv.appendChild(card);
+        });
+    }
+
+    window.toggleBannerActive = (id) => {
+        const idx = banners.findIndex(b => b.id === id);
+        if (idx !== -1) {
+            banners[idx].active = !banners[idx].active;
+            saveBanners();
+            renderBanners();
+        }
+    };
+    window.deleteBanner = (id) => {
+        if (confirm('Hapus banner ini?')) {
+            banners = banners.filter(b => b.id !== id);
+            saveBanners();
+            renderBanners();
+        }
+    };
+
+    bannerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const link = bannerLinkInput.value.trim();
+        const active = bannerActiveSelect.value === 'true';
+        const file = bannerImageFile.files[0];
+        if (!link) return alert('Masukkan link');
+        if (!file) return alert('Pilih gambar banner');
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            banners.push({ id: 'b'+Date.now(), imageUrl: ev.target.result, link, active, createdAt: new Date().toISOString() });
+            saveBanners();
+            renderBanners();
+            bannerForm.reset();
+            bannerImagePreview.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
     });
 
     // Login
@@ -427,7 +587,7 @@
     ordersTab.addEventListener('click', showOrders);
     invoicesTab.addEventListener('click', showInvoices);
     adsTab.addEventListener('click', showAds);
-    promoTab.addEventListener('click', showPromo);
+    bannersTab.addEventListener('click', showBanners);
     logoutBtn.addEventListener('click', () => {
         adminPanelDiv.style.display = 'none';
         loginFormDiv.style.display = 'block';
@@ -439,6 +599,7 @@
     renderOrders();
     renderInvoices();
     renderAds();
+    renderBanners();
 </script>
 </body>
 </html>
