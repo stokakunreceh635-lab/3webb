@@ -10,7 +10,6 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
         body { background:linear-gradient(145deg,#f0f4f8 0%,#e6edf4 100%); color:#1a2c3e; padding:1.5rem; }
         .container { max-width:1400px; margin:0 auto; }
-        /* Logo baru */
         .logo {
             display: flex;
             align-items: center;
@@ -68,18 +67,21 @@
         .btn-outline:hover { background:#3b82f6; color:white; }
         .btn-danger { background:#ef4444; color:white; }
         .btn-success { background:#10b981; color:white; }
-        .product-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.8rem; }
-        .product-card { background:#f8fafc; border-radius:1.5rem; overflow:hidden; border:1px solid #e2e8f0; transition:0.2s; }
-        .product-card:hover { transform:translateY(-5px); box-shadow:0 15px 30px -12px rgba(0,0,0,0.15); }
-        .product-img { height:180px; background:#cbd5e1; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-        .product-img img { width:100%; height:100%; object-fit:cover; }
-        .product-info { padding:1.2rem; }
+        .product-grid, .ad-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.8rem; }
+        .product-card, .ad-card { background:#f8fafc; border-radius:1.5rem; overflow:hidden; border:1px solid #e2e8f0; transition:0.2s; }
+        .product-card:hover, .ad-card:hover { transform:translateY(-5px); box-shadow:0 15px 30px -12px rgba(0,0,0,0.15); }
+        .product-img, .ad-img { height:180px; background:#cbd5e1; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        .product-img img, .ad-img img { width:100%; height:100%; object-fit:cover; }
+        .product-info, .ad-info { padding:1.2rem; }
         .product-title { font-weight:700; font-size:1.2rem; }
         .product-price { color:#3b82f6; font-weight:800; margin:0.5rem 0; }
-        .product-actions { display:flex; gap:0.8rem; justify-content:flex-end; }
+        .ad-title { font-weight:700; font-size:1.1rem; }
+        .product-actions, .ad-actions { display:flex; gap:0.8rem; justify-content:flex-end; }
         .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
         .modal-content { background:white; border-radius:2rem; padding:2rem; max-width:500px; width:90%; }
         .invoice-item { border:1px solid #e2e8f0; border-radius:1rem; padding:1rem; margin-bottom:1rem; }
+        .badge-active { background:#10b981; color:white; padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.8rem; }
+        .badge-inactive { background:#ef4444; color:white; padding:0.2rem 0.6rem; border-radius:1rem; font-size:0.8rem; }
         footer { text-align:center; margin-top:3rem; color:#64748b; }
     </style>
 </head>
@@ -97,6 +99,7 @@
             <a id="productsTab">Produk</a>
             <a id="ordersTab">Pesanan</a>
             <a id="invoicesTab">Tagihan</a>
+            <a id="adsTab">Iklan</a>
             <a id="logoutBtn">Logout</a>
         </div>
     </div>
@@ -108,7 +111,7 @@
             <input type="password" id="adminPassword" class="form-control" placeholder="Masukkan password admin">
         </div>
         <button class="btn btn-primary" id="adminLoginBtn">Login</button>
-        <p style="margin-top:1rem;">Password: <strong>admin123</strong></p>
+        <p style="margin-top:1rem;">Password: <strong>admin1</strong></p>
     </div>
 
     <div id="adminPanel" style="display:none;">
@@ -185,6 +188,39 @@
                 <div id="invoiceList"></div>
             </div>
         </div>
+
+        <!-- Iklan -->
+        <div id="adsPanel" style="display:none;">
+            <div class="card">
+                <h2 class="section-title">Tambah Iklan Baru</h2>
+                <form id="adForm">
+                    <div class="form-group">
+                        <label>Judul Iklan</label>
+                        <input type="text" id="adTitle" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL Gambar</label>
+                        <input type="url" id="adImageUrl" class="form-control" placeholder="https://..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL Tautan</label>
+                        <input type="url" id="adLink" class="form-control" placeholder="https://..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="adActive" class="form-control">
+                            <option value="true">Aktif</option>
+                            <option value="false">Tidak Aktif</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Simpan Iklan</button>
+                </form>
+            </div>
+            <div class="card">
+                <h2 class="section-title">Daftar Iklan</h2>
+                <div id="adList" class="ad-grid"></div>
+            </div>
+        </div>
     </div>
 
     <footer>© 2026 3DXO STORE - Admin Panel</footer>
@@ -194,15 +230,18 @@
     const STORAGE_KEYS = {
         PRODUCTS: '3dxo_products',
         ORDERS: '3dxo_orders',
-        INVOICES: '3dxo_invoices'
+        INVOICES: '3dxo_invoices',
+        ADS: '3dxo_ads'
     };
     let products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
     let orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS)) || [];
     let invoices = JSON.parse(localStorage.getItem(STORAGE_KEYS.INVOICES)) || [];
+    let ads = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADS)) || [];
 
     function saveProducts() { localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products)); }
     function saveOrders() { localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders)); }
     function saveInvoices() { localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices)); }
+    function saveAds() { localStorage.setItem(STORAGE_KEYS.ADS, JSON.stringify(ads)); }
 
     if (products.length === 0) {
         products = [
@@ -212,17 +251,28 @@
         ];
         saveProducts();
     }
+    if (ads.length === 0) {
+        ads = [
+            { id: 'ad1', title: 'Promo Spesial', imageUrl: 'https://picsum.photos/id/1/300/200', link: 'https://example.com', active: true, createdAt: new Date().toISOString() },
+            { id: 'ad2', title: 'Diskon 50%', imageUrl: 'https://picsum.photos/id/2/300/200', link: 'https://example.com', active: true, createdAt: new Date().toISOString() }
+        ];
+        saveAds();
+    }
 
-    const loginForm = document.getElementById('loginForm');
-    const adminPanel = document.getElementById('adminPanel');
-    const productsPanel = document.getElementById('productsPanel');
-    const ordersPanel = document.getElementById('ordersPanel');
-    const invoicesPanel = document.getElementById('invoicesPanel');
+    // DOM elements
+    const loginFormDiv = document.getElementById('loginForm');
+    const adminPanelDiv = document.getElementById('adminPanel');
+    const productsPanelDiv = document.getElementById('productsPanel');
+    const ordersPanelDiv = document.getElementById('ordersPanel');
+    const invoicesPanelDiv = document.getElementById('invoicesPanel');
+    const adsPanelDiv = document.getElementById('adsPanel');
     const productListDiv = document.getElementById('productList');
     const orderListDiv = document.getElementById('orderList');
     const invoiceListDiv = document.getElementById('invoiceList');
+    const adListDiv = document.getElementById('adList');
     const productForm = document.getElementById('productForm');
     const invoiceForm = document.getElementById('invoiceForm');
+    const adForm = document.getElementById('adForm');
     const productIdInput = document.getElementById('productId');
     const productNameInput = document.getElementById('productName');
     const productCategoryInput = document.getElementById('productCategory');
@@ -233,12 +283,15 @@
     const productsTab = document.getElementById('productsTab');
     const ordersTab = document.getElementById('ordersTab');
     const invoicesTab = document.getElementById('invoicesTab');
+    const adsTab = document.getElementById('adsTab');
     const logoutBtn = document.getElementById('logoutBtn');
     const adminLoginBtn = document.getElementById('adminLoginBtn');
 
-    function showProducts() { productsPanel.style.display='block'; ordersPanel.style.display='none'; invoicesPanel.style.display='none'; renderProducts(); }
-    function showOrders() { productsPanel.style.display='none'; ordersPanel.style.display='block'; invoicesPanel.style.display='none'; renderOrders(); }
-    function showInvoices() { productsPanel.style.display='none'; ordersPanel.style.display='none'; invoicesPanel.style.display='block'; renderInvoices(); }
+    // Function definitions
+    function showProducts() { productsPanelDiv.style.display='block'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; renderProducts(); }
+    function showOrders() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='block'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='none'; renderOrders(); }
+    function showInvoices() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='block'; adsPanelDiv.style.display='none'; renderInvoices(); }
+    function showAds() { productsPanelDiv.style.display='none'; ordersPanelDiv.style.display='none'; invoicesPanelDiv.style.display='none'; adsPanelDiv.style.display='block'; renderAds(); }
 
     function renderProducts() {
         productListDiv.innerHTML = '';
@@ -362,26 +415,107 @@
         invoiceForm.reset();
     });
 
-    adminLoginBtn.addEventListener('click', () => {
-        if (document.getElementById('adminPassword').value === 'admin123') {
-            loginForm.style.display = 'none';
-            adminPanel.style.display = 'block';
-            showProducts();
-        } else alert('Password salah');
+    function renderAds() {
+        adListDiv.innerHTML = '';
+        if (ads.length === 0) { adListDiv.innerHTML = '<div class="card">Belum ada iklan.</div>'; return; }
+        ads.forEach(ad => {
+            const card = document.createElement('div');
+            card.className = 'ad-card';
+            card.innerHTML = `
+                <div class="ad-img"><img src="${ad.imageUrl}" alt="${ad.title}"></div>
+                <div class="ad-info">
+                    <div class="ad-title">${ad.title}</div>
+                    <div class="ad-link">${ad.link}</div>
+                    <div class="mt-2">Status: ${ad.active ? '<span class="badge-active">Aktif</span>' : '<span class="badge-inactive">Tidak Aktif</span>'}</div>
+                    <div class="ad-actions">
+                        <button class="btn btn-outline" onclick="editAd('${ad.id}')">Edit</button>
+                        <button class="btn btn-outline" onclick="toggleAdActive('${ad.id}')">${ad.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                        <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">Hapus</button>
+                    </div>
+                </div>
+            `;
+            adListDiv.appendChild(card);
+        });
+    }
+
+    window.editAd = (id) => {
+        const ad = ads.find(a => a.id === id);
+        if (ad) {
+            document.getElementById('adTitle').value = ad.title;
+            document.getElementById('adImageUrl').value = ad.imageUrl;
+            document.getElementById('adLink').value = ad.link;
+            document.getElementById('adActive').value = ad.active ? 'true' : 'false';
+            adForm.dataset.editId = ad.id;
+        }
+    };
+    window.toggleAdActive = (id) => {
+        const idx = ads.findIndex(a => a.id === id);
+        if (idx !== -1) {
+            ads[idx].active = !ads[idx].active;
+            saveAds();
+            renderAds();
+        }
+    };
+    window.deleteAd = (id) => {
+        if (confirm('Hapus iklan ini?')) {
+            ads = ads.filter(a => a.id !== id);
+            saveAds();
+            renderAds();
+        }
+    };
+
+    adForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('adTitle').value.trim();
+        const imageUrl = document.getElementById('adImageUrl').value.trim();
+        const link = document.getElementById('adLink').value.trim();
+        const active = document.getElementById('adActive').value === 'true';
+        if (!title || !imageUrl || !link) return alert('Isi semua field');
+        const editId = adForm.dataset.editId;
+        if (editId) {
+            const idx = ads.findIndex(a => a.id === editId);
+            if (idx !== -1) {
+                ads[idx] = { ...ads[idx], title, imageUrl, link, active };
+                delete adForm.dataset.editId;
+            }
+        } else {
+            ads.push({ id: 'ad'+Date.now(), title, imageUrl, link, active, createdAt: new Date().toISOString() });
+        }
+        saveAds();
+        renderAds();
+        adForm.reset();
     });
 
+    // LOGIN - password sekarang admin1
+    adminLoginBtn.addEventListener('click', () => {
+        const password = document.getElementById('adminPassword').value.trim();
+        if (password === 'admin1') {
+            loginFormDiv.style.display = 'none';
+            adminPanelDiv.style.display = 'block';
+            showProducts();
+        } else {
+            alert('Password salah! Gunakan "admin1"');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').focus();
+        }
+    });
+
+    // Tabs
     productsTab.addEventListener('click', showProducts);
     ordersTab.addEventListener('click', showOrders);
     invoicesTab.addEventListener('click', showInvoices);
+    adsTab.addEventListener('click', showAds);
     logoutBtn.addEventListener('click', () => {
-        adminPanel.style.display = 'none';
-        loginForm.style.display = 'block';
+        adminPanelDiv.style.display = 'none';
+        loginFormDiv.style.display = 'block';
         document.getElementById('adminPassword').value = '';
     });
 
+    // Initial render (these will run but panel hidden)
     renderProducts();
     renderOrders();
     renderInvoices();
+    renderAds();
 </script>
 </body>
 </html>
